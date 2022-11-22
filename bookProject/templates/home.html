@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light text_style">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="/">Literary Lunatics</a>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <!-- ## Jason START ## -->
+      <li class="nav-item nav-link">
+        <a href="/displaybooks">Display Books</a>
+      </li>
+      <li class="nav-item nav-link">
+        <a href="/displayrequest">Requested Books</a>
+      </li>
+      <!-- ## Jason END ## -->
+    </ul>
+    {% if user.is_authenticated %}
+    <a class="nav-item" href="/mybooks">My Books</a>
+    <a class="nav-item" style="padding-left: 20px" href="/mymessages">My Messages</a>
+    <a href="{% url 'logout' %}" style="padding-left: 20px">Logout</a>
+    {% else %}
+    <a class="nav-item" href="{% url 'login' %}">Login</a>
+    <a class="nav-item" href="{% url 'signup' %}" style="padding-left: 20px">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+<h1 align="center" class="text_style">Welcome to Literary Lunatics</h1>
+<p align="center" style="font-size: 20px" class="text_style">Literary Lunatics is a website that makes it easier for users
+to exchange books.</p>
+<p align="center" style="font-size: 20px" class="text_style">Here are some of the features you can use:</p>
+<div class="container text_style">
+  <div class="card-group">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Display Books</h5>
+        <p class="card-text">See all books being sold in one place</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Post A Book</h5>
+        <p class="card-text">Easily sell a book you don't need</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Request A Book</h5>
+        <p class="card-text">Post a request, and see if someone else has that book</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

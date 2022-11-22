@@ -1,0 +1,17 @@
+.text_style{
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* mouse over link */
+a:hover {
+  text-decoration: underline;
+  text-decoration-color: #FBCE4C;
+}
+
+.auth_form{
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+

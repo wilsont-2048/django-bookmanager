@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Book Detail
+{% endblock title %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light text_style">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="/">Literary Lunatics</a>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <!-- ## Jason START ## -->
+      <li class="nav-item nav-link">
+        <a href="/displaybooks">Display Books</a>
+      </li>
+      <li class="nav-item nav-link">
+        <a href="/displayrequest">Requested Books</a>
+      </li>
+      <!-- ## Jason END ## -->
+    </ul>
+    {% if user.is_authenticated %}
+    <a class="nav-item" href="/mybooks">My Books</a>
+    <a class="nav-item" style="padding-left: 20px" href="/mymessages">My Messages</a>
+    <a href="{% url 'logout' %}" style="padding-left: 20px">Logout</a>
+    {% else %}
+    <a class="nav-item" href="{% url 'login' %}">Login</a>
+    <a class="nav-item" href="{% url 'signup' %}" style="padding-left: 20px">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+<table align="center" width="35%" height="350" class="text_style">
+        <tr>
+            <td style="padding-top: 30px;">
+                <img src="{% static book.pic_path %}" width="275" height="350">
+            </td>
+            <td style="padding-top: 30px;">
+                <b>{{ book.name }}</b><br>
+                ${{ book.price }}<br>
+                Posted by {{ book.user_name }}
+            </td>
+        </tr>
+</table>
+<!--Review Form-->
+<h2 class="py-3 text_style" align="center">Have the same book?
+    <br>Write your own review!
+    <br><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Write a review
+    </button>
+</h2>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Review Form</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% if book.username != request.user %}
+        <h2 class="py-3" align="center">Have the same book?<br>Write your own review!</h2>
+        <form action="" enctype="multipart/form-data" method="post" novalidate>
+            <table align="center">
+                <tr>
+                    <th>
+                        <label for="id_rating">Rating:</label>
+                    </th>
+                    <td>
+                        <input id="id_rating" type="number" name="rating" value="0" step="1" required="">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="id_title">Title:</label>
+                    </th>
+                    <td >
+                        <input id="id_title" type="text" name="title" maxlength="200" required="">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="id_description">Description:</label>
+                    </th>
+                    <td >
+                        <textarea id="id_description" name="description" cols="30" rows="10" required=""></textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td >
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                    </td>
+                </tr>
+            </table>
+            {% csrf_token %}
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="my-5">
+    <table align="center" width="50%">
+        {% for review in book.review_set.all %}
+            <tr style="border-bottom: 1px solid black;">
+                <td style="padding-bottom: 15px; padding-top: 15px; padding-right: 40px; padding-left: 10px;">
+                    {{ review.username }} <br>
+                    <b>{{ review.rating }}/5</b> <br>
+                    Reviewed on {{ review.publishdate }} <br>
+                    <b>{{ review.title }}</b> <br>
+                    {{ review.description }} <br>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock content %}

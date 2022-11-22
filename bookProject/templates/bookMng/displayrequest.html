@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Requested Books
+{% endblock title %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light text_style">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="/">Literary Lunatics</a>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <!-- ## Jason START ## -->
+      <li class="nav-item nav-link">
+        <a href="/displaybooks">Display Books</a>
+      </li>
+      <li class="nav-item nav-link">
+        <a href="/displayrequest">Requested Books</a>
+      </li>
+      <!-- ## Jason END ## -->
+    </ul>
+    {% if user.is_authenticated %}
+    <a class="nav-item" href="/mybooks">My Books</a>
+    <a class="nav-item" style="padding-left: 20px" href="/mymessages">My Messages</a>
+    <a href="{% url 'logout' %}" style="padding-left: 20px">Logout</a>
+    {% else %}
+    <a class="nav-item" href="{% url 'login' %}">Login</a>
+    <a class="nav-item" href="{% url 'signup' %}" style="padding-left: 20px">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+<div class="container">
+  <h2 align="center" class="text_style">Here are the books that are currently being requested</h2>
+  <a data-toggle="modal" data-target="#requestbook" href="#requestbook"><h3 align="center" class="text_style">Can't find a book? Request it here</h3></a>
+    <div class="modal fade" id="requestbook" tabindex="-1" aria-labelledby="requestbookLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="requestbookLabel">Request Book</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                {% if book.username != request.user %}
+                <h2 class="py-3" align="center">Want to request a book?<br>Fill out the form!</h2>
+                <form action="{% url 'requestbook' %}" enctype="multipart/form-data" method="post" novalidate>
+                    <table align="center">
+                    <tr><th><label for="id_name">Name:</label></th><td><input type="text" name="name" maxlength="200" required id="id_name"></td></tr>
+                    <tr><th><label for="id_bookName">BookName:</label></th><td><input type="text" name="bookName" maxlength="200" required id="id_bookName"></td></tr>
+                    <tr><th><label for="id_email">Email:</label></th><td><input type="text" name="email" maxlength="200" required id="id_email"></td></tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="submit" value="Submit" class="btn" style="background-color: #ffcc00">
+                        </td>
+                    </tr>
+                    </table>
+                    {% csrf_token %}
+                </form>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+  <table class="table text_style" style="padding: 10px">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Requested Book Name</th>
+        <th scope="col">Contact</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rb in requestedbooks %}
+        <tr>
+          <td>
+              {{rb.name}}
+          </td>
+          <td>
+              {{rb.bookName}}
+          </td>
+          <td>
+              <button type="button" style="background-color: #FFCC00" class="btn btn-sm" data-toggle="modal" data-target="#contact{{ rb.name }}">Contact</button>
+              <div class="modal fade" id="contact{{ rb.name }}" tabindex="-1" aria-labelledby="contact{{ rb.name }}Label" aria-hidden="true">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="contact{{ rb.name }}Label">Message to {{ rb.name }}</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                              </div>
+                          <div class="modal-body">
+                              <form id="form{{ rb.id }}" action="{% url 'contact' %}" method="post">
+                                  {% csrf_token %}
+                                    <input type="hidden" name="post-username" value="{{ rb.name }}">
+                                    <table align="center">
+                                        <tr>
+                                            <td>
+                                            <div class="form-group">
+                                                <textarea name="subject" class="form-control" placeholder="Subject" required></textarea>
+                                            </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <textarea name="message" class="form-control" rows="5" cols="50" placeholder="Message" required></textarea>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="btn btn-warning" type="submit" value="Send">
+                                            </td>
+                                        </tr>
+                                    </table>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </td>
+
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<!--<table align="center" border="2" width="500">-->
+<!--    {% for rb in requestedbooks %}-->
+<!--    <tr>-->
+<!--        {{rb.bookName}}-->
+<!--    </tr>-->
+<!--    {% endfor %}-->
+<!--</table>-->
+{% endblock content %}

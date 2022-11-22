@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+   Replying to {{ message.sender }}
+{% endblock title %}
+
+{% block content %}
+<!--if statement to give thanks if message was sent-->
+{% if message_receiver %}
+<h3 align="center">Your message was sent to {{ message_receiver }}.</h3>
+<ol><a align="center" class="btn btn-outline-primary" href="/mymessages">Back To Messages</a></ol>
+<!--else, message form-->
+{% else %}
+<h1 align="center"> Replying to Message from {{ message.sender }} </h1>
+    <table class="table" align="center" width="80%">
+    <tr>
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-title">Date and Time</h6>
+                <p class="card-text">{{ message.datetime }}</p>
+                <h6 class="card-title">Subject</h6>
+                <p class="card-text">{{ message.subject }}</p>
+                <h6 class="card-title">Message</h6>
+                <p class="card-text">{{ message.message }}</p>
+
+            </div>
+        </div>
+    </tr>
+    </table>
+<!--Reply Form-->
+<form action="{% url 'reply' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="subject" value="{{ message.subject }}">
+    <input type="hidden" name="receiver" value="{{ message.sender }}">
+    <table align="center" width="80%" cellpadding="10px">
+        <tr>
+            <td>
+                <div class="form-group">
+                    <label for="TextArea1">Your Reply</label>
+                        <textarea name="message" class="form-control" rows="5" required></textarea>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input class="btn btn-primary" type="submit" value="Send">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a class="btn btn-outline-primary" href="/mymessages">Back</a>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endif %}
+{% endblock content %}

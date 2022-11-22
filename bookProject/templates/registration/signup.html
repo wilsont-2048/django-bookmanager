@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 style="padding-left: 20px">Sign Up</h1>
+<form method="POST" class="form-group" style="padding-left: 20px;">
+    {% csrf_token %}
+    {% for field in form %}
+    <p>
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+        <small style="color: grey">{{ field.help_text | safe }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+        <p style="color: red">{{ error | safe }}</p>
+        {% endfor %}
+    </p>
+    {% endfor %}
+<!--    {{ form.as_p }}-->
+    <button type="submit" class="btn btn-warning">Sign Up</button>
+</form>
+<a href="{% url 'login' %}" style="padding-left: 20px">Have an Account? Login</a>
+
+{% endblock content %}

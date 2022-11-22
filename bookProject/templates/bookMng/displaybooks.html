@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Display Books
+{% endblock title %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light text_style">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="/">Literary Lunatics</a>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <!-- ## Jason START ## -->
+      <li class="nav-item nav-link">
+        <a href="/displaybooks">Display Books</a>
+      </li>
+      <li class="nav-item nav-link">
+        <a href="/displayrequest">Requested Books</a>
+      </li>
+      <!-- ## Jason END ## -->
+    </ul>
+    {% if user.is_authenticated %}
+    <a class="nav-item" href="/mybooks">My Books</a>
+    <a class="nav-item" style="padding-left: 20px" href="/mymessages">My Messages</a>
+    <a href="{% url 'logout' %}" style="padding-left: 20px">Logout</a>
+    {% else %}
+    <a class="nav-item" href="{% url 'login' %}">Login</a>
+    <a class="nav-item" href="{% url 'signup' %}" style="padding-left: 20px">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+<div class="container">
+{% if message_sender %}
+<h2 align="center">Thanks {{ message_sender }}!</h2>
+<h5 align="center">{{ message_receiver }} has received your message and will respond shortly...</h5>
+<ol><input type="button" class="btn btn-outline-primary" value="Back" onclick="history.back()"></ol>
+{% else %}
+<h3 align="center" class="text_style">Here are the books being sold currently</h3>
+<h4 align="center" class="text_style">Want to sell a book?
+    <!-- Post Book form -->
+    <a data-toggle="modal" data-target="#postbook" href="#postbook">Click here</a></h4>
+    <div class="modal fade" id="postbook" tabindex="-1" aria-labelledby="postbookLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="postbookLabel">Post Book</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                {% if book.username != request.user %}
+                <h2 class="py-3" align="center">Want to sell a book?<br>Fill out the form!</h2>
+                <form action="{% url 'postbook' %}" enctype="multipart/form-data" method="post" novalidate>
+                        <table style="margin-left: 5.25em;">
+                        <tr><th><label for="id_name">Name:</label></th><td><input type="text" name="name" maxlength="200" required id="id_name"></td></tr>
+                        <tr><th><label for="id_web">Web:</label></th><td><input type="url" name="web" maxlength="200" required id="id_web"></td></tr>
+                        <tr><th><label for="id_price">Price:</label></th><td><input type="number" name="price" required id="id_price"></td></tr>
+                        <tr><th><label for="id_picture">Picture:</label></th><td><input type="file" name="picture" required id="id_picture"></td></tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="submit" value="Submit" class="btn" style="background-color: #ffcc00">
+                            </td>
+                        </tr>
+                        </table>
+                        {% csrf_token %}
+                    </form>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Post Book end -->
+<center>
+    {% if submitted %}
+    <p>Success</p>
+    {% else %}
+    <form style="justify-content-center" action="" enctype="multipart/form-data" method="post" novalidate>
+        <input
+            class="form-control mr-sm-2 text_style" type="text" name="searchbar"
+            placeholder="Search" value="{{query|escape}}"
+        style="width: 500px">
+       {% csrf_token %}
+    </form>
+    {% endif %}
+</center>
+<br>
+<div class="row row-cols-1 row-cols-md-3" style="margin-left: 2em">
+    {% for book in books %}
+    <div class="card mb-5 offset-md-1" style="max-width: 440px;">
+      <div class="row no-gutters">
+        <div class="col-md-4">
+          <img src="{% static book.pic_path %}" class="card-img" alt="..." style="padding: 20px">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <a href="book_detail/{{ book.id }}"><h5 class="card-title text_style"> {{ book.name }}</h5></a>
+            <!--Contact Form Items-->
+            <button type="button" style="background-color: #FFCC00" class="btn btn-sm" data-toggle="modal" data-target="#contact{{ book.user_name }}">Contact {{ book.user_name }}</button>
+              <div class="modal fade" id="contact{{ book.user_name }}" tabindex="-1" aria-labelledby="contact{{ book.user_name }}Label" aria-hidden="true">
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="contact{{ book.user_name }}Label">Message to {{ book.user_name }}</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                              </div>
+                          <div class="modal-body">
+                              <form id="form{{ book.id }}" action="{% url 'contact' %}" method="post">
+                                  {% csrf_token %}
+                                    <input type="hidden" name="post-username" value="{{ book.user_name }}">
+                                    <table align="center">
+                                        <tr>
+                                            <td>
+                                            <div class="form-group">
+                                                <textarea name="subject" class="form-control" placeholder="Subject" required></textarea>
+                                            </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <textarea name="message" class="form-control" rows="5" cols="50" placeholder="Message" required></textarea>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input class="btn btn-warning" type="submit" value="Send">
+                                            </td>
+                                        </tr>
+                                    </table>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <!--End Contact Form Items-->
+            <p class="card-text"><small class="text-muted text_style">${{ book.price }}</small></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endif %}
+{% endblock content %}
